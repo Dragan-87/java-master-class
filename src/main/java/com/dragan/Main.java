@@ -34,7 +34,7 @@ public class Main {
                         carBookingService.startBookingProcess();
                         break;
                     case 2:
-                        /*cancelBooking()*/
+                        carBookingService.cancelBookingById();
                         break;
                     case 3:
                         /*cancelBooking()*/

@@ -121,7 +121,7 @@ public class CarBookingService {
             try {
                 String stringUUID = scanner.nextLine();
                 UUID uuid = UUID.fromString(stringUUID);
-                
+                return;
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid UUID, pleas try again!");
                 cancelBookingById();
