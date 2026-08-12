@@ -1,0 +1,107 @@
+package com.dragan;
+// TODO 1. create a new branch called initial-implementation
+// TODO 2. create a package with your name. i.e com.franco and move this file inside the new package
+// TODO 3. implement https://amigoscode.com/learn/java-cli-build/lectures/3a83ecf3-e837-4ae5-85a8-f8ae3f60f7f5
+
+import com.dragan.booking.CarBookingService;
+import com.dragan.car.Car;
+import com.dragan.car.CarService;
+import com.dragan.user.User;
+import com.dragan.user.UserService;
+
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        CarService carService = new CarService();
+        UserService userService = new UserService();
+        CarBookingService carBookingService = new CarBookingService(userService, carService);
+
+        int userChoiceInput = 0;
+        boolean isValid = false;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to Car Booking System");
+        printMenu();
+
+        while (userChoiceInput != 8) {
+            String input = scanner.nextLine();
+            try {
+                userChoiceInput = Integer.parseInt(input);
+                switch (userChoiceInput) {
+                    case 1:
+                        carBookingService.startBookingProcess();
+                        break;
+                    case 2:
+                        /*cancelBooking()*/
+                        break;
+                    case 3:
+                        /*cancelBooking()*/
+                        break;
+                    case 4:
+                        /*cancelBooking()*/
+                        break;
+                    case 5:
+                        handleViewAvailableCars(carService);
+                        break;
+                    case 6:
+                        handleViewAvailableElectricCars(carService);
+                        break;
+                    case 7:
+                        handleViewAllUsers(userService);
+                        break;
+                    case 8:
+                        System.out.println("Exit process.");
+                        break;
+                    default:
+                        System.out.println("Number is bigger then 8");
+
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("That is not a number! Please try again.\n");
+                printMenu();
+            }
+        }
+    }
+
+    public static void printMenu() {
+        System.out.println();
+        System.out.println("Pleas enter a Number to chose a option:");
+        System.out.println("1 - Book Car");
+        System.out.println("2 - Delete Booking");
+        System.out.println("3 - View All User Booked Cars");
+        System.out.println("4 - View All Bookings");
+        System.out.println("5 - View Available Cars");
+        System.out.println("6 - View Available Electric Cars");
+        System.out.println("7 - View All Users");
+        System.out.println("8 - Exit");
+    }
+
+    public static void handleViewAllUsers(UserService userService) {
+        var users = userService.getUsers();
+        for (User user : users) {
+            if (user != null) {
+                System.out.println(user);
+            }
+        }
+    }
+
+    public static void handleViewAvailableCars(CarService carService) {
+        var cars = carService.getCars();
+        for (Car car : cars) {
+            if (car != null) {
+                System.out.println(car);
+            }
+        }
+    }
+
+    public static void handleViewAvailableElectricCars(CarService carService) {
+        var cars = carService.getCars();
+        for (Car car : cars) {
+            if (car != null && car.isElectric()) {
+                System.out.println(car);
+            }
+        }
+    }
+}
