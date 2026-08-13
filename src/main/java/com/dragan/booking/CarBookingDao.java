@@ -11,7 +11,7 @@ public class CarBookingDao {
     CarBooking[] carBookings = {};
 
     public CarBooking[] getCarBookings() {
-        return carBookings;
+        return Arrays.copyOf(carBookings, carBookings.length);
     }
 
     public CarBooking save(CarBooking carBooking) {

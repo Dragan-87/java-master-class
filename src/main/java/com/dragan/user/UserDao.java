@@ -2,6 +2,7 @@ package com.dragan.user;
 
 import com.dragan.exceptions.ResourceNotFoundException;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -23,16 +24,7 @@ public class UserDao {
     }
 
     public User[] getUsers() {
-        return users;
-    }
-
-    public boolean userExists(UUID uuid) throws ResourceNotFoundException {
-        for (User user : users) {
-            if (user != null && Objects.equals(uuid, user.getUuid())) {
-                return true;
-            }
-        }
-        throw new ResourceNotFoundException("User whit UUID: " + uuid + " not found");
+        return Arrays.copyOf(users, users.length);
     }
 
 }

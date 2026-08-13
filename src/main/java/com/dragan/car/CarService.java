@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public class CarService {
 
-    CarDao carDao = new CarDao();
+    CarDao carDao;
+
+    public CarService(CarDao carDao) {
+        this.carDao = carDao;
+    }
 
     public Car[] getCars() {
         return carDao.getCars();
-    }
-
-    public boolean isExisting(UUID uuid) {
-        return carDao.isExisting(uuid);
     }
 
     public Car getCarById(UUID uuid) {

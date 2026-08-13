@@ -3,10 +3,13 @@ package com.dragan;
 // TODO 2. create a package with your name. i.e com.franco and move this file inside the new package
 // TODO 3. implement https://amigoscode.com/learn/java-cli-build/lectures/3a83ecf3-e837-4ae5-85a8-f8ae3f60f7f5
 
+import com.dragan.booking.CarBookingDao;
 import com.dragan.booking.CarBookingService;
 import com.dragan.car.Car;
+import com.dragan.car.CarDao;
 import com.dragan.car.CarService;
 import com.dragan.user.User;
+import com.dragan.user.UserDao;
 import com.dragan.user.UserService;
 
 import java.util.Scanner;
@@ -14,9 +17,14 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        CarService carService = new CarService();
-        UserService userService = new UserService();
-        CarBookingService carBookingService = new CarBookingService(userService, carService);
+        final CarDao carDao = new CarDao();
+        final CarService carService = new CarService(carDao);
+
+        final UserDao userDao = new UserDao();
+        final UserService userService = new UserService(userDao);
+
+        final CarBookingDao carBookingDao = new CarBookingDao();
+        final CarBookingService carBookingService = new CarBookingService(userService, carService, carBookingDao);
 
         int userChoiceInput = 0;
         boolean isValid = false;
@@ -31,10 +39,10 @@ public class Main {
                 userChoiceInput = Integer.parseInt(input);
                 switch (userChoiceInput) {
                     case 1:
-                        carBookingService.startBookingProcess();
+                        handleCarStartBookingProcess(carBookingService);
                         break;
                     case 2:
-                        carBookingService.cancelBookingById();
+                        handleCancelBookingById(carBookingService);
                         break;
                     case 3:
                         /*cancelBooking()*/
@@ -103,5 +111,13 @@ public class Main {
                 System.out.println(car);
             }
         }
+    }
+
+    public static void handleCarStartBookingProcess(CarBookingService carBookingService) {
+        carBookingService.startBookingProcess();
+    }
+
+    public static void handleCancelBookingById(CarBookingService carBookingService) {
+        carBookingService.cancelBookingById();
     }
 }

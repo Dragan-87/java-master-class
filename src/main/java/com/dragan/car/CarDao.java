@@ -3,11 +3,12 @@ package com.dragan.car;
 import com.dragan.exceptions.ResourceNotFoundException;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
 public class CarDao {
-    Car[] cars = {
+    private Car[] cars = {
             new Car(UUID.randomUUID(), "MA MA 223".toUpperCase(), new BigDecimal("230.00"), Brand.AUDI, false),
             new Car(UUID.randomUUID(), "MA MA 444".toUpperCase(), new BigDecimal("400.00"), Brand.MERCEDES, false),
             new Car(UUID.randomUUID(), "MA MA 933".toUpperCase(), new BigDecimal("130.00"), Brand.TESLA, true),
@@ -15,7 +16,7 @@ public class CarDao {
     };
 
     public Car[] getCars() {
-        return cars;
+        return Arrays.copyOf(cars, cars.length);
     }
 
     public Car getCarById(UUID uuid) throws ResourceNotFoundException {
@@ -27,12 +28,4 @@ public class CarDao {
         throw new ResourceNotFoundException("Car with UUID: " + uuid + " not found");
     }
 
-    public boolean isExisting(UUID uuid) throws ResourceNotFoundException {
-        for (Car car : cars) {
-            if (car != null && Objects.equals(uuid, car.getUuid())) {
-                return true;
-            }
-        }
-        throw new ResourceNotFoundException("Car with UUID: " + uuid + " not found");
-    }
 }

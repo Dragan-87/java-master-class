@@ -17,20 +17,21 @@ import java.util.UUID;
 
 
 public class CarBookingService {
-    UserService userService;
-    CarService carService;
-    CarBookingDao carBookingDao = new CarBookingDao();
-    Scanner scanner = new Scanner(System.in);
-    LocalDate today = LocalDate.now();
+    private final UserService userService;
+    private final CarService carService;
+    private final CarBookingDao carBookingDao;
+    private final Scanner scanner = new Scanner(System.in);
+    private final LocalDate today = LocalDate.now();
 
-    CarBooking[] carBookings = carBookingDao.getCarBookings();
 
-    public CarBookingService(UserService userService, CarService carService) {
+    public CarBookingService(UserService userService, CarService carService, CarBookingDao carBookingDao) {
         this.userService = userService;
         this.carService = carService;
+        this.carBookingDao = carBookingDao;
     }
 
     public CarBooking bookCar(User user, Car car, LocalDate start, LocalDate end) {
+        var carBookings = carBookingDao.getCarBookings();
         for (CarBooking carBooking : carBookings) {
             if (carBooking != null && Objects.equals(car.getUuid(), carBooking.getCar().getUuid())) {
                 if (!isAvailable(start, end, carBooking.getStartDate(), carBooking.getEndDate())) {
@@ -116,12 +117,12 @@ public class CarBookingService {
         System.out.println(bookCar(user, car, start, end));
     }
 
-    public void cancelBookingById() {
+    public CarBooking[] cancelBookingById() throws IllegalArgumentException {
         while (true) {
             try {
                 String stringUUID = scanner.nextLine();
                 UUID uuid = UUID.fromString(stringUUID);
-                return;
+                return carBookingDao.deleteById(uuid);
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid UUID, pleas try again!");
                 cancelBookingById();
@@ -129,13 +130,15 @@ public class CarBookingService {
         }
     }
 
+
     /*delete after testing*/
     static void main() {
-        UserService userService1 = new UserService();
+/*        UserService userService1 = new UserService();
         CarService carService1 = new CarService();
-        CarBookingService carBookingService = new CarBookingService(userService1, carService1);
+        CarBookingDao carBookingDao1 = new CarBookingDao();
+        CarBookingService carBookingService = new CarBookingService(userService1, carService1, carBookingDao1);
         Scanner scanner1 = new Scanner(System.in);
-        carBookingService.startBookingProcess();
+        carBookingService.startBookingProcess();*/
     }
 
 }
