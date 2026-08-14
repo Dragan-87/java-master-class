@@ -121,7 +121,7 @@ public class CarBookingService {
     public CarBooking[] cancelBookingById() throws IllegalArgumentException {
         while (true) {
             try {
-                UUID uuid = validateUUID("Is not a valid UUID, pleas try again!");
+                UUID uuid = validateUUID("Enter car booking UUID");
                 return carBookingDao.deleteById(uuid);
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid UUID, pleas try again!");

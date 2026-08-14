@@ -50,6 +50,7 @@ public class CarBookingDao {
             newIndex++;
         }
 
+        carBookings = newArray;
         return newArray;
     }
 }

@@ -28,7 +28,6 @@ public class Main {
         final CarBookingService carBookingService = new CarBookingService(userService, carService, carBookingDao);
 
         int userChoiceInput = 0;
-        boolean isValid = false;
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome to Car Booking System");
@@ -124,6 +123,11 @@ public class Main {
 
     public static void handleViewAllUserBookings(CarBookingService carBookingService) {
         CarBooking[] carBookingsByUser = carBookingService.getUserBookingsById();
+        if (carBookingsByUser.length == 0) {
+            System.out.println("No bookings yet");
+            return;
+        }
+
         for (CarBooking booking : carBookingsByUser) {
             if ((booking != null)) {
                 System.out.println(booking);
@@ -133,6 +137,11 @@ public class Main {
 
     public static void handleAllBookingsView(CarBookingService carBookingService) {
         CarBooking[] allBookings = carBookingService.getAllBookings();
+        if (allBookings.length == 0) {
+            System.out.println("No bookings yet");
+            return;
+        }
+
         for (CarBooking booking : allBookings) {
             if (booking != null) {
                 System.out.println(booking);
