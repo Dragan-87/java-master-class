@@ -3,6 +3,7 @@ package com.dragan;
 // TODO 2. create a package with your name. i.e com.franco and move this file inside the new package
 // TODO 3. implement https://amigoscode.com/learn/java-cli-build/lectures/3a83ecf3-e837-4ae5-85a8-f8ae3f60f7f5
 
+import com.dragan.booking.CarBooking;
 import com.dragan.booking.CarBookingDao;
 import com.dragan.booking.CarBookingService;
 import com.dragan.car.Car;
@@ -45,10 +46,10 @@ public class Main {
                         handleCancelBookingById(carBookingService);
                         break;
                     case 3:
-                        /*cancelBooking()*/
+                        handleViewAllUserBookings(carBookingService);
                         break;
                     case 4:
-                        /*cancelBooking()*/
+                        handleAllBookingsView(carBookingService);
                         break;
                     case 5:
                         handleViewAvailableCars(carService);
@@ -78,7 +79,7 @@ public class Main {
         System.out.println("Pleas enter a Number to chose a option:");
         System.out.println("1 - Book Car");
         System.out.println("2 - Delete Booking");
-        System.out.println("3 - View All User Booked Cars");
+        System.out.println("3 - View all bookings by specific user");
         System.out.println("4 - View All Bookings");
         System.out.println("5 - View Available Cars");
         System.out.println("6 - View Available Electric Cars");
@@ -119,5 +120,23 @@ public class Main {
 
     public static void handleCancelBookingById(CarBookingService carBookingService) {
         carBookingService.cancelBookingById();
+    }
+
+    public static void handleViewAllUserBookings(CarBookingService carBookingService) {
+        CarBooking[] carBookingsByUser = carBookingService.getUserBookingsById();
+        for (CarBooking booking : carBookingsByUser) {
+            if ((booking != null)) {
+                System.out.println(booking);
+            }
+        }
+    }
+
+    public static void handleAllBookingsView(CarBookingService carBookingService) {
+        CarBooking[] allBookings = carBookingService.getAllBookings();
+        for (CarBooking booking : allBookings) {
+            if (booking != null) {
+                System.out.println(booking);
+            }
+        }
     }
 }

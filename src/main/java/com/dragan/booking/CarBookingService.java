@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.UUID;
@@ -120,8 +121,7 @@ public class CarBookingService {
     public CarBooking[] cancelBookingById() throws IllegalArgumentException {
         while (true) {
             try {
-                String stringUUID = scanner.nextLine();
-                UUID uuid = UUID.fromString(stringUUID);
+                UUID uuid = validateUUID("Is not a valid UUID, pleas try again!");
                 return carBookingDao.deleteById(uuid);
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid UUID, pleas try again!");
@@ -130,15 +130,23 @@ public class CarBookingService {
         }
     }
 
-
-    /*delete after testing*/
-    static void main() {
-/*        UserService userService1 = new UserService();
-        CarService carService1 = new CarService();
-        CarBookingDao carBookingDao1 = new CarBookingDao();
-        CarBookingService carBookingService = new CarBookingService(userService1, carService1, carBookingDao1);
-        Scanner scanner1 = new Scanner(System.in);
-        carBookingService.startBookingProcess();*/
+    public CarBooking[] getAllBookings() {
+        return carBookingDao.getCarBookings();
     }
+
+    public CarBooking[] getUserBookingsById() {
+        CarBooking[] userBookings = {};
+        CarBooking[] allBookings = getAllBookings();
+        UUID uuid = validateUUID("Is not a valid UUID, pleas try again!");
+        for (int i = 0; i < allBookings.length; i++) {
+            if (allBookings[i] != null && Objects.equals(uuid, allBookings[i].getUser().getUuid())) {
+                userBookings = Arrays.copyOf(userBookings, userBookings.length + 1);
+                userBookings[userBookings.length - 1] = allBookings[i];
+            }
+        }
+        return userBookings;
+    }
+
+
 
 }
