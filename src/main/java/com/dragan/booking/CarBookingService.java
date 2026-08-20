@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Objects;
@@ -57,39 +56,15 @@ public class CarBookingService {
         return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
     }
 
-    public LocalDate validateStartingDate(String message) {
-        LocalDate start;
-        while (true) {
-            System.out.println(message);
-            try {
-                start = LocalDate.parse(scanner.nextLine());
-                if (start.isBefore(today)) {
-                    throw new IllegalArgumentException("Starting date is in the past!");
-                }
-                return start;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid format, please try again!");
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
+    public void validateStartingDate(LocalDate start) {
+        if (start.isBefore(today)) {
+            throw new IllegalArgumentException("Starting date is in the past!");
         }
     }
 
-    public LocalDate validateEndingDate(String message, LocalDate start) {
-        LocalDate end;
-        while (true) {
-            System.out.println(message);
-            try {
-                end = LocalDate.parse(scanner.nextLine());
-                if (start.isAfter(end)) {
-                    throw new IllegalArgumentException("Start date is after end date");
-                }
-                return end;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid format, please try again!");
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
+    public void validateEndingDate(LocalDate start, LocalDate end) {
+        if (start.isAfter(end)) {
+            throw new IllegalArgumentException("Start date is after end date");
         }
     }
 
@@ -112,10 +87,9 @@ public class CarBookingService {
 
         user = userService.getUserById(validateUUID("Enter user id"));
         car = carService.getCarById(validateUUID("Enter car id"));
-        start = validateStartingDate("Staring Date, format: jjjj-mm-dd");
-        end = validateEndingDate("End Date, format: jjjj-mm-dd", start);
 
-        System.out.println(bookCar(user, car, start, end));
+
+        /*System.out.println(bookCar(user, car, start, end));*/
     }
 
     public CarBooking[] cancelBookingById() throws IllegalArgumentException {

@@ -13,9 +13,13 @@ import com.dragan.user.User;
 import com.dragan.user.UserDao;
 import com.dragan.user.UserService;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Main {
+    Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         final CarDao carDao = new CarDao();
@@ -30,6 +34,8 @@ public class Main {
         int userChoiceInput = 0;
         Scanner scanner = new Scanner(System.in);
 
+        Main mainObj = new Main();
+
         System.out.println("Welcome to Car Booking System");
         printMenu();
 
@@ -39,7 +45,8 @@ public class Main {
                 userChoiceInput = Integer.parseInt(input);
                 switch (userChoiceInput) {
                     case 1:
-                        handleCarStartBookingProcess(carBookingService);
+//                        handleCarStartBookingProcess(carBookingService);
+                        mainObj.readDate("Enter date, format: yyyy-mm-dd");
                         break;
                     case 2:
                         handleCancelBookingById(carBookingService);
@@ -114,7 +121,7 @@ public class Main {
     }
 
     public static void handleCarStartBookingProcess(CarBookingService carBookingService) {
-        carBookingService.startBookingProcess();
+//        carBookingService.startBookingProcess();
     }
 
     public static void handleCancelBookingById(CarBookingService carBookingService) {
@@ -148,4 +155,16 @@ public class Main {
             }
         }
     }
+
+    public LocalDate readDate(String message) {
+        while (true) {
+            System.out.println(message);
+            try {
+                return LocalDate.parse(scanner.nextLine());
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid format, pleas try again!");
+            }
+        }
+    }
+
 }
