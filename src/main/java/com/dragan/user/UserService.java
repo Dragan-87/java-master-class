@@ -1,9 +1,5 @@
 package com.dragan.user;
 
-
-import com.dragan.exceptions.ResourceNotFoundException;
-
-import java.util.Scanner;
 import java.util.UUID;
 
 public class UserService {
@@ -19,15 +15,7 @@ public class UserService {
     }
 
     public User getUserById(UUID uuid) {
-        while (true) {
-            try {
-                return userDao.getUserById(uuid);
-            } catch (ResourceNotFoundException e) {
-                System.out.println("User UUID not found, try again:");
-                Scanner scanner = new Scanner(System.in);
-                getUserById(UUID.fromString(scanner.nextLine()));
-            }
-        }
+        return userDao.getUserById(uuid);
     }
 
 }

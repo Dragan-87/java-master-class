@@ -2,6 +2,7 @@ package com.dragan.booking;
 
 import com.dragan.car.Car;
 import com.dragan.car.CarService;
+import com.dragan.exceptions.ResourceNotFoundException;
 import com.dragan.user.User;
 import com.dragan.user.UserService;
 
@@ -12,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.UUID;
 
 
@@ -20,7 +20,6 @@ public class CarBookingService {
     private final UserService userService;
     private final CarService carService;
     private final CarBookingDao carBookingDao;
-    private final Scanner scanner = new Scanner(System.in);
     private final LocalDate today = LocalDate.now();
 
 
@@ -56,62 +55,21 @@ public class CarBookingService {
         return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
     }
 
-    public void validateStartingDate(LocalDate start) {
-        if (start.isBefore(today)) {
-            throw new IllegalArgumentException("Starting date is in the past!");
+    public CarBooking cancelBookingById(UUID uuid) throws ResourceNotFoundException {
+        CarBooking booking = carBookingDao.deleteById(uuid);
+        if (booking == null) {
+            throw new ResourceNotFoundException("Booking not found: " + uuid);
         }
-    }
-
-    public void validateEndingDate(LocalDate start, LocalDate end) {
-        if (start.isAfter(end)) {
-            throw new IllegalArgumentException("Start date is after end date");
-        }
-    }
-
-    public UUID validateUUID(String message) {
-        while (true) {
-            System.out.println(message);
-            try {
-                return UUID.fromString(scanner.nextLine());
-            } catch (IllegalArgumentException e) {
-                System.out.println("UUID is invalid, please try again!");
-            }
-        }
-    }
-
-    public void startBookingProcess() {
-        User user;
-        Car car;
-        LocalDate start;
-        LocalDate end;
-
-        user = userService.getUserById(validateUUID("Enter user id"));
-        car = carService.getCarById(validateUUID("Enter car id"));
-
-
-        /*System.out.println(bookCar(user, car, start, end));*/
-    }
-
-    public CarBooking[] cancelBookingById() throws IllegalArgumentException {
-        while (true) {
-            try {
-                UUID uuid = validateUUID("Enter car booking UUID");
-                return carBookingDao.deleteById(uuid);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid UUID, pleas try again!");
-                cancelBookingById();
-            }
-        }
+        return booking;
     }
 
     public CarBooking[] getAllBookings() {
         return carBookingDao.getCarBookings();
     }
 
-    public CarBooking[] getUserBookingsById() {
+    public CarBooking[] getUserBookingsById(UUID uuid) {
         CarBooking[] userBookings = {};
         CarBooking[] allBookings = getAllBookings();
-        UUID uuid = validateUUID("Is not a valid UUID, pleas try again!");
         for (int i = 0; i < allBookings.length; i++) {
             if (allBookings[i] != null && Objects.equals(uuid, allBookings[i].getUser().getUuid())) {
                 userBookings = Arrays.copyOf(userBookings, userBookings.length + 1);

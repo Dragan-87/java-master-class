@@ -21,9 +21,9 @@ public class CarBookingDao {
         return carBooking;
     }
 
-    public CarBooking[] deleteById(UUID uuid) throws ResourceNotFoundException {
+    public CarBooking deleteById(UUID uuid) throws ResourceNotFoundException {
         if (carBookings == null || uuid == null) {
-            return carBookings;
+            throw new ResourceNotFoundException("Booking not found: " + uuid);
         }
 
         int indexToRemove = -1;
@@ -35,22 +35,19 @@ public class CarBookingDao {
         }
 
         if (indexToRemove == -1) {
-            System.out.println("Booking whit UUID: " + uuid + " not found.");
-            return carBookings;
+            throw new ResourceNotFoundException("Booking not found: " + uuid);
         }
 
-        CarBooking[] newArray = new CarBooking[carBookings.length - 1];
+        CarBooking removed = carBookings[indexToRemove];
 
+        CarBooking[] newArray = new CarBooking[carBookings.length - 1];
         int newIndex = 0;
         for (int i = 0; i < carBookings.length; i++) {
-            if (i == indexToRemove) {
-                continue;
-            }
-            newArray[newIndex] = carBookings[i];
-            newIndex++;
+            if (i == indexToRemove) continue;
+            newArray[newIndex++] = carBookings[i];
         }
 
         carBookings = newArray;
-        return newArray;
+        return removed;
     }
 }

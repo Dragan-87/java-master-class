@@ -1,7 +1,4 @@
 package com.dragan;
-// TODO 1. create a new branch called initial-implementation
-// TODO 2. create a package with your name. i.e com.franco and move this file inside the new package
-// TODO 3. implement https://amigoscode.com/learn/java-cli-build/lectures/3a83ecf3-e837-4ae5-85a8-f8ae3f60f7f5
 
 import com.dragan.booking.CarBooking;
 import com.dragan.booking.CarBookingDao;
@@ -9,14 +6,15 @@ import com.dragan.booking.CarBookingService;
 import com.dragan.car.Car;
 import com.dragan.car.CarDao;
 import com.dragan.car.CarService;
+import com.dragan.exceptions.ResourceNotFoundException;
 import com.dragan.user.User;
 import com.dragan.user.UserDao;
 import com.dragan.user.UserService;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
     Scanner scanner = new Scanner(System.in);
@@ -45,32 +43,31 @@ public class Main {
                 userChoiceInput = Integer.parseInt(input);
                 switch (userChoiceInput) {
                     case 1:
-//                        handleCarStartBookingProcess(carBookingService);
-                        mainObj.readDate("Enter date, format: yyyy-mm-dd");
+                        mainObj.handleCarStartBookingProcess(carBookingService, userService, carService);
                         break;
                     case 2:
-                        handleCancelBookingById(carBookingService);
+                        mainObj.handleCancelBookingById(carBookingService);
                         break;
                     case 3:
-                        handleViewAllUserBookings(carBookingService);
+                        mainObj.handleViewAllUserBookings(carBookingService);
                         break;
                     case 4:
-                        handleAllBookingsView(carBookingService);
+                        mainObj.handleAllBookingsView(carBookingService);
                         break;
                     case 5:
-                        handleViewAvailableCars(carService);
+                        mainObj.handleViewAvailableCars(carService);
                         break;
                     case 6:
-                        handleViewAvailableElectricCars(carService);
+                        mainObj.handleViewAvailableElectricCars(carService);
                         break;
                     case 7:
-                        handleViewAllUsers(userService);
+                        mainObj.handleViewAllUsers(userService);
                         break;
                     case 8:
                         System.out.println("Exit process.");
                         break;
                     default:
-                        System.out.println("Number is bigger then 8");
+                        System.out.println("Enter a number from 1 to 8");
 
                 }
             } catch (NumberFormatException e) {
@@ -93,7 +90,7 @@ public class Main {
         System.out.println("8 - Exit");
     }
 
-    public static void handleViewAllUsers(UserService userService) {
+    public void handleViewAllUsers(UserService userService) {
         var users = userService.getUsers();
         for (User user : users) {
             if (user != null) {
@@ -102,7 +99,7 @@ public class Main {
         }
     }
 
-    public static void handleViewAvailableCars(CarService carService) {
+    public void handleViewAvailableCars(CarService carService) {
         var cars = carService.getCars();
         for (Car car : cars) {
             if (car != null) {
@@ -111,7 +108,7 @@ public class Main {
         }
     }
 
-    public static void handleViewAvailableElectricCars(CarService carService) {
+    public void handleViewAvailableElectricCars(CarService carService) {
         var cars = carService.getCars();
         for (Car car : cars) {
             if (car != null && car.isElectric()) {
@@ -120,16 +117,31 @@ public class Main {
         }
     }
 
-    public static void handleCarStartBookingProcess(CarBookingService carBookingService) {
-//        carBookingService.startBookingProcess();
+    public void handleCarStartBookingProcess(CarBookingService carBookingService, UserService userService, CarService carService) {
+        while (true) {
+            try {
+                User user = handleGetUserByIdRequest(userService);
+                Car car = handleGetCarByIdRequest(carService);
+                LocalDate start = handleUserDateInput("Enter starting date, format yyyy-mm-dd");
+                LocalDate end = handleUserDateInput("Enter ending date, format yyyy-mm-dd");
+                System.out.println(carBookingService.bookCar(user, car, start, end));
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid user UUID, pleas try again!");
+            } catch (ResourceNotFoundException e) {
+                System.out.println("UUID not found, pleas try again!");
+            }
+        }
     }
 
-    public static void handleCancelBookingById(CarBookingService carBookingService) {
-        carBookingService.cancelBookingById();
+    public void handleCancelBookingById(CarBookingService carBookingService) {
+        UUID uuid = validateUUID("Enter booking UUID");
+        carBookingService.cancelBookingById(uuid);
     }
 
-    public static void handleViewAllUserBookings(CarBookingService carBookingService) {
-        CarBooking[] carBookingsByUser = carBookingService.getUserBookingsById();
+    public void handleViewAllUserBookings(CarBookingService carBookingService) {
+        UUID userUUID = validateUUID("Enter user UUID");
+        CarBooking[] carBookingsByUser = carBookingService.getUserBookingsById(userUUID);
         if (carBookingsByUser.length == 0) {
             System.out.println("No bookings yet");
             return;
@@ -142,7 +154,7 @@ public class Main {
         }
     }
 
-    public static void handleAllBookingsView(CarBookingService carBookingService) {
+    public void handleAllBookingsView(CarBookingService carBookingService) {
         CarBooking[] allBookings = carBookingService.getAllBookings();
         if (allBookings.length == 0) {
             System.out.println("No bookings yet");
@@ -156,13 +168,46 @@ public class Main {
         }
     }
 
-    public LocalDate readDate(String message) {
+    public User handleGetUserByIdRequest(UserService userService) {
+        UUID userUUID = validateUUID("Enter user UUID:");
+        try {
+            return userService.getUserById(userUUID);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage() + ", pleas try again!");
+            return handleGetUserByIdRequest(userService);
+        }
+
+    }
+
+    public Car handleGetCarByIdRequest(CarService carService) {
+        UUID userUUID = validateUUID("Enter car UUID:");
+        try {
+            return carService.getCarById(userUUID);
+        } catch (ResourceNotFoundException e) {
+            System.out.println(e.getMessage() + ", pleas try again!");
+            return handleGetCarByIdRequest(carService);
+        }
+
+    }
+
+    public  UUID validateUUID(String message) throws IllegalArgumentException {
         while (true) {
             System.out.println(message);
             try {
+                return UUID.fromString(scanner.nextLine());
+            } catch (IllegalArgumentException e) {
+                System.out.println("UUID is invalid, please try again!");
+            }
+        }
+    }
+
+    public LocalDate handleUserDateInput(String message) {
+        while (true) {
+            try {
+                System.out.println(message);
                 return LocalDate.parse(scanner.nextLine());
             } catch (DateTimeParseException e) {
-                System.out.println("Invalid format, pleas try again!");
+                System.out.println("Invalid date, pleas try again! Date format yyyy-mm-dd");
             }
         }
     }
